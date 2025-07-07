@@ -37,7 +37,7 @@ const BestSeller = () => {
     
 {bestseller.length > 0 ? (
     bestseller.map((item) => (
-        <ProductItem key={item._id} id={item._id} name={item.name} image={item.image} price={item.price} />
+        <ProductItem key={item._id} id={item._id} name={item.name} image={item.images} price={item.price} />
     ))
 ) : (
     <p className="text-center text-gray-500 col-span-full">No best-selling products available.</p>

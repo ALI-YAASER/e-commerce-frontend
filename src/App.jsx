@@ -6,6 +6,7 @@ import Collection from './pages/Collection'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
+import Profile from './pages/Profile.jsx'
 import Cart from './pages/Cart'
 import PlaceOrder from './pages/PlaceOrder'
 import Order from './pages/Order'
@@ -15,6 +16,7 @@ import Footer from './component/Footer';
 import SearchBar from './component/SearchBar';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/ReactToastify.css' ;
+import Verife from './pages/Verife.jsx';
 
 const App = () => {
   return (
@@ -29,9 +31,11 @@ const App = () => {
       <  Route path="/contact" element={<Contact />} />
       <  Route path="/login" element={<Login />} />
       <  Route path="/Cart" element={<Cart />} />
-      <  Route path="/order" element={<Order />} />
+      <  Route path="/order" element={<Order/>}  />
+      <  Route path="/profile" element={<Profile/>}  />
       <  Route path="/place-order" element={<PlaceOrder />} />
       <  Route path="/product/:productId" element={< Product />} />
+      <  Route path="/verife" element={<Verife/>}  />
       </Routes>
       <Footer />
     </div>

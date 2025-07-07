@@ -1,39 +1,46 @@
 /* eslint-disable no-unused-vars */
-import React, { useContext, useEffect, useState } from 'react'
-import Title from '../component/Title'
-import { ShopContext } from '../context/ShopContext'
-import product from './product';
+import React, { useContext, useEffect, useState } from 'react';
+import Title from '../component/Title';
+import { ShopContext } from '../context/ShopContext';
 import CartTotal from "../component/CartTotal";
 import { assets } from '../assets/frontend_assets/assets';
 
 const Cart = () => {
-  const{products, currency,cartItems,  updateQuantity ,navigate  } = useContext(ShopContext) ;
-  const[cartData , setCartData] = useState([]) ;
+  const {
+    products,
+    currency,
+    cartItems,
+    updateQuantity,
+    navigate,
+    backendUrl, // ✅ مهم لعرض الصور
+  } = useContext(ShopContext);
 
-useEffect(()=>{
+  const [cartData, setCartData] = useState([]);
 
-const tempData = [] ;
+  useEffect(() => {
 
+    if (products.length > 0) {
+      const tempData = [];
 
-
-for (const itemId in cartItems) {
-  for (const size in cartItems[itemId]) {
-    if (cartItems[itemId][size] > 0) {
-      const product = products.find((p) => p._id === itemId);
-      if (cartItems[itemId][size] > 0) {
-        tempData.push({
-          _id: itemId, // Merging product details
-          size: size,
-          quantity: cartItems[itemId][size],
-        });
+      for (const itemId in cartItems) {
+        for (const size in cartItems[itemId]) {
+          if (cartItems[itemId][size] > 0) {
+            const product = products.find((p) => p._id === itemId);
+            if (product) {
+              tempData.push({
+                _id: itemId,
+                size: size,
+                quantity: cartItems[itemId][size],
+              });
+            }
+          }
+        }
       }
+
+      setCartData(tempData);
     }
-  }
-}
 
-
-  setCartData(tempData);
-},[cartItems,products])
+  }, [cartItems, products]);
 
   return (
     <div className='border-t pt-14'>
@@ -41,43 +48,78 @@ for (const itemId in cartItems) {
         <Title text1={'Your'} text2={'CART'} />
       </div>
 
+      {/* Cart List */}
       <div className="">
-          {
-          cartData.map((item,index)=>{
-              const productData = products.find((product) => product._id === item._id) ;
-              return(
-                <div className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4 " key={index}>
-                  <div className="flex items-start gap-6">
-                        <img src={productData.image[0]} alt='' className='w-16 sm:w-20'/>  
-                      <div className="">
-                        <p className='text-xs sm:text-lg font-medium'>{productData.name}</p>
-                        <div className="flex items-center  gap-5 mt-2">
-                          <p>{currency} {productData.price}</p>
-                          <p className='px-2 sm:p-4  sm:py-1 border bg-slate-50' >{item.size}</p>
-                        </div>
-                      </div>
+        {cartData.map((item, index) => {
+          const productData = products.find((product) => product._id === item._id);
+          return (
+            <div
+              key={index}
+              className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4"
+            >
+              <div className="flex items-start gap-6">
+                {/* ✅ صورة المنتج */}
+                <img
+                  src={
+                    Array.isArray(productData.images) && productData.images[0]
+                      ? backendUrl + productData.images[0]
+                      : assets.placeholder_image
+                  }
+                  alt={productData.name}
+                  className='w-16 sm:w-20 object-cover'
+                  onError={(e) => (e.target.src = assets.placeholder_image)}
+                />
+                {/* تفاصيل المنتج */}
+                <div>
+                  <p className='text-xs sm:text-lg font-medium'>{productData.name}</p>
+                  <div className="flex items-center gap-5 mt-2">
+                    <p>{currency} {productData.price}</p>
+                    <p className='px-2 sm:p-4 sm:py-1 border bg-slate-50'>{item.size}</p>
                   </div>
-                  <input onChange={(e)=> e.target.value === '' || e.target.value === '0' ? null : updateQuantity(item._id,item.size,Number(e.target.value)) } className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1' type='number' min={1} defaultValue={item.quantity} /> 
-                  <img onClick={()=> updateQuantity(item._id,item.size,0)} className='w-4 mr-4 sm:w-5 cursor-pointer' src={assets.bin_icon} alt='' />
                 </div>
-              )
-})
-        }  
+              </div>
 
+              {/* الكمية */}
+              <input
+                onChange={(e) =>
+                  e.target.value === '' || e.target.value === '0'
+                    ? null
+                    : updateQuantity(item._id, item.size, Number(e.target.value))
+                }
+                className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1'
+                type='number'
+                min={1}
+                defaultValue={item.quantity}
+              />
 
-        
+              {/* حذف المنتج */}
+              <img
+                onClick={() => updateQuantity(item._id, item.size, 0)}
+                className='w-4 mr-4 sm:w-5 cursor-pointer'
+                src={assets.bin_icon}
+                alt='Delete'
+              />
+            </div>
+          );
+        })}
       </div>
-      <div className="flex justify-end my-20 ">
+
+      {/* المجموع */}
+      <div className="flex justify-end my-20">
         <div className="w-full sm:w-[450px]">
-          <CartTotal />  
+          <CartTotal />
           <div className="w-full text-end">
-            <button onClick={()=> navigate('/place-order')} className="bg-black text-white text-sm my-8 px-8 py-4 cursor-pointer">Proceed to checkout</button>
+            <button
+              onClick={() => navigate('/place-order')}
+              className="bg-black text-white text-sm my-8 px-8 py-4 cursor-pointer"
+            >
+              Proceed to checkout
+            </button>
           </div>
         </div>
       </div>
-      
     </div>
-  )
-}
+  );
+};
 
-export default Cart
+export default Cart;

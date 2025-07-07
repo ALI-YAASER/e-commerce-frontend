@@ -6,8 +6,10 @@ import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/frontend_assets/assets';
 import ProductItem from '../component/ProductItem';
 import Title from '../component/Title';
+
 const Collection = () => {
     const {products} =useContext(ShopContext);
+    const { backendUrl } = useContext(ShopContext);
   const [showFilter , setShowFilter] = useState(false) ;
   const [filterProducts , setFilterProducts] = useState([]);
   const [category , setCategory] = useState([]);
@@ -63,15 +65,16 @@ const sortProducts = () =>{
 
 
   useEffect(()=>{
-applyFilter() ;
-},[category,subCategory])
+      applyFilter() ;
+},[category,subCategory,products])
+
   useEffect(()=>{
     sortProducts();
   },[sortType])
 
-  useEffect(()=>{
-setFilterProducts(products)
-},[products])
+//   useEffect(()=>{
+// setFilterProducts(products)
+// },[products])
 
 
 
@@ -127,7 +130,7 @@ setFilterProducts(products)
     
     {filterProducts.length > 0 ? (
         filterProducts.map((item) => (
-            <ProductItem key={item._id} id={item._id} name={item.name} image={item.image} price={item.price} />
+            <ProductItem key={item._id} id={item._id} name={item.name} image={item.images} price={item.price} />
         ))
     ) : (
         <p className="text-center text-gray-500 col-span-full">No best-selling products available.</p>
