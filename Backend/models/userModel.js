@@ -28,7 +28,8 @@ const userSchema = new mongoose.Schema({
     phone: { type: String, default: "" },
     gender: { type: String, enum: ['Male', 'Female', 'Other' , ''], default: "" },
     birthday: { type: Date, default: null },
-    profileImage: { type: String, default: "" } // optional field
+    profileImage: { type: String, default: "" },
+    profileImagePublicId: String,
 }, { minimize: false });
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);

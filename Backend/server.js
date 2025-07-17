@@ -4,7 +4,7 @@ import 'dotenv/config'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import connectDB from './config/mongodb.js'
-import connectCloundinary from './config/cloudinary.js'
+import {connectCloudinary} from './config/cloudinary.js'
 import userRouter from './routes/userRouter.js'
 import productRouter from './routes/productRouter.js'
 import cartRouter from './routes/cartRouter.js'
@@ -14,17 +14,21 @@ import orderRouter from "./routes/orderRouter.js";
 const app = express()
 const port = process.env.PORT || 4000
 connectDB()
-connectCloundinary()
+connectCloudinary()
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // Middlewares
-console.log("JWT_SECRET =", process.env.JWT_SECRET)
 
 
-app.use(cors());
+app.use(cors({
+    origin: '*', // أو حدد frontend فقط لو حبيت
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
+
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 app.use(express.urlencoded({ extended: true })); // ← يدعم form-data
 app.use(express.json());                          // ← بعده عادي

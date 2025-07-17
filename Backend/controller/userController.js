@@ -1,5 +1,6 @@
 import userModel from "../models/userModel.js";
 import bcrypt from 'bcryptjs';
+import { cloudinary } from "../config/cloudinary.js";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -189,7 +190,53 @@ export const getUserProfile = async (req, res) => {
     }
 };
 
+//
+// export const updateUserInformation = async (req, res) => {
+//     try {
+//         const userId = req.userId;
+//
+//         const {
+//             name,
+//             email,
+//             phone,
+//             gender,
+//             birthday,
+//             addressLine1,
+//             addressLine2,
+//         } = req.body;
+//
+//         const user = await userModel.findById(userId);
+//         if (!user) return res.status(404).json({ success: false, message: "User not found" });
+//
+//         if (req.file && user.profileImage) {
+//             fs.unlink(user.profileImage, err => {
+//                 if (err) console.error("Error deleting old profile image:", err);
+//             });
+//         }
+//
+//         user.name = name || user.name;
+//         user.email = email || user.email;
+//         user.phone = phone || user.phone;
+//         user.gender = gender || user.gender;
+//         user.birthday = birthday || user.birthday;
+//         user.address = {
+//             line1: addressLine1 || user.address?.line1 || "",
+//             line2: addressLine2 || user.address?.line2 || "",
+//         };
+//
+//         if (req.file) user.profileImage = req.file.path;
+//
+//         await user.save();
+//
+//         res.status(200).json({ success: true, user });
+//     } catch (error) {
+//         console.error("Update user error:", error); // 👈 أضف هذا
+//         res.status(500).json({ success: false, message: "Server error" });
+//     }
+// };
 
+
+// ✅ تحديث معلومات المستخدم
 export const updateUserInformation = async (req, res) => {
     try {
         const userId = req.userId;
@@ -207,10 +254,20 @@ export const updateUserInformation = async (req, res) => {
         const user = await userModel.findById(userId);
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
-        if (req.file && user.profileImage) {
-            fs.unlink(user.profileImage, err => {
-                if (err) console.error("Error deleting old profile image:", err);
+        // ✅ حذف صورة Cloudinary القديمة (لو موجودة)
+        if (req.file) {
+            if (user.profileImagePublicId) {
+                await cloudinary.uploader.destroy(user.profileImagePublicId);
+            }
+
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: "user-profiles",
             });
+
+            fs.unlinkSync(req.file.path);
+
+            user.profileImage = result.secure_url;
+            user.profileImagePublicId = result.public_id;
         }
 
         user.name = name || user.name;
@@ -223,18 +280,15 @@ export const updateUserInformation = async (req, res) => {
             line2: addressLine2 || user.address?.line2 || "",
         };
 
-        if (req.file) user.profileImage = req.file.path;
-
         await user.save();
-
         res.status(200).json({ success: true, user });
     } catch (error) {
-        console.error("Update user error:", error); // 👈 أضف هذا
+        console.error("Update user error:", error);
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
 
-// ✅ Delete profile image only
+// ✅ حذف صورة البروفايل فقط
 export const deleteUserProfileImage = async (req, res) => {
     try {
         const userId = req.userId;
@@ -244,11 +298,13 @@ export const deleteUserProfileImage = async (req, res) => {
             return res.status(404).json({ success: false, message: "No profile image to delete" });
         }
 
-        fs.unlink(user.profileImage, (err) => {
-            if (err) console.error("Error deleting image:", err);
-        });
+        // ✅ حذف من Cloudinary
+        if (user.profileImagePublicId) {
+            await cloudinary.uploader.destroy(user.profileImagePublicId);
+        }
 
         user.profileImage = "";
+        user.profileImagePublicId = "";
         await user.save();
 
         res.status(200).json({ success: true, message: "Profile image deleted" });
@@ -257,6 +313,31 @@ export const deleteUserProfileImage = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
+
+//
+// // ✅ Delete profile image only
+// export const deleteUserProfileImage = async (req, res) => {
+//     try {
+//         const userId = req.userId;
+//         const user = await userModel.findById(userId);
+//
+//         if (!user || !user.profileImage) {
+//             return res.status(404).json({ success: false, message: "No profile image to delete" });
+//         }
+//
+//         fs.unlink(user.profileImage, (err) => {
+//             if (err) console.error("Error deleting image:", err);
+//         });
+//
+//         user.profileImage = "";
+//         await user.save();
+//
+//         res.status(200).json({ success: true, message: "Profile image deleted" });
+//     } catch (error) {
+//         console.error("Delete image error:", error);
+//         res.status(500).json({ success: false, message: "Server error" });
+//     }
+// };
 
 export const adminLogin = async (req, res) => {
     try {
