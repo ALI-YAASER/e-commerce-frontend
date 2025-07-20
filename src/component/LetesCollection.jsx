@@ -21,11 +21,29 @@ return (
         </div>
         {/* product */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-py-6 ">
+            {/*{*/}
+            {/*    latestProducts.map((item,index)=>(*/}
+            {/*        <ProductItem key={item._id} id={item._id} image={item.images} name={item.name} price={item.price}/>*/}
+            {/*    ))*/}
+            {/*}*/}
             {
-                latestProducts.map((item,index)=>(
-                    <ProductItem key={item._id} id={item._id} image={item.images} name={item.name} price={item.price}/>
-                ))
+                latestProducts.map((item, index) => {
+                    console.log("📦 Product:", item);          // ✅ كل منتج
+                    console.log("🖼️ Images Array:", item.images);  // ✅ مصفوفة الصور
+                    console.log("📸 First Image:", item.images?.[0]); // ✅ أول صورة
+
+                    return (
+                        <ProductItem
+                            key={item._id}
+                            id={item._id}
+                            image={item.images?.[0]} // ✅ أرسل أول صورة فقط
+                            name={item.name}
+                            price={item.price}
+                        />
+                    );
+                })
             }
+
         </div>
     </div>
 )

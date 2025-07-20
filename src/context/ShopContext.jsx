@@ -16,7 +16,7 @@ const ShopContextProvider = ({ children }) => {
   const delivery_fee = 10;
 
   // ✅ استخدم env أو fallback
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);

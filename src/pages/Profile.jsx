@@ -91,9 +91,7 @@ const Profile = () => {
 
     const profileImageUrl = selectedImageFile
         ? URL.createObjectURL(selectedImageFile)
-        : userData.profileImage
-            ? `${backendUrl}/${userData.profileImage.replace(/\\/g, '/')}`
-            : "/default-avatar.png";
+        : userData.profileImage || "/default-avatar.png";
 
     return (
         <div className="max-w-2xl mx-auto p-6 space-y-6 bg-white shadow rounded-lg mt-6">

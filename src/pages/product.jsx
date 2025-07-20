@@ -18,11 +18,17 @@ const Product = () => {
     const found = products.find((item) => item._id === productId);
     if (found) {
       setProductData(found);
+      // setImage(
+      //   Array.isArray(found.images) && found.images[0]
+      //     ? backendUrl + found.images[0]
+      //     : assets.placeholder_image
+      // );
       setImage(
-        Array.isArray(found.images) && found.images[0]
-          ? backendUrl + found.images[0]
-          : assets.placeholder_image
+          Array.isArray(found.images) && found.images[0]
+              ? (found.images[0].startsWith('http') ? found.images[0] : backendUrl + found.images[0])
+              : assets.placeholder_image
       );
+
     }
   }, [productId, products]);
 
@@ -39,13 +45,13 @@ const Product = () => {
           <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full">
             {Array.isArray(productData.images) && productData.images.length > 0 ? (
               productData.images.map((img, index) => (
-                <img
-                  key={index}
-                  onClick={() => setImage(backendUrl + img)}
-                  src={backendUrl + img}
-                  alt=""
-                  className='w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer'
-                />
+                  <img
+                      key={index}
+                      onClick={() => setImage(img.startsWith('http') ? img : backendUrl + img)}
+                      src={img.startsWith('http') ? img : backendUrl + img}
+                      alt=""
+                      className='w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer'
+                  />
               ))
             ) : (
               <img src={assets.placeholder_image} className="w-full" alt="No images" />
@@ -54,7 +60,11 @@ const Product = () => {
 
           {/* Main Image */}
           <div className="w-full sm:w-[80%]">
-            <img src={image} alt='' className='w-full h-auto object-cover' />
+              <img
+                  src={image}
+                  alt='..'
+                  className='w-full h-auto object-cover'
+              />
           </div>
         </div>
 
@@ -71,6 +81,7 @@ const Product = () => {
           </div>
           <p className='mt-5 text-3xl font-medium'>${productData.price}</p>
           <p className='mt-5 text-gray-500 md:w-4/5'>{productData.description}</p>
+          <p className='mt-5 text-gray-500 md:w-4/5'>ID : {productData._id} </p>
 
           {/* Sizes */}
           <div className="flex flex-col gap-4 my-8">

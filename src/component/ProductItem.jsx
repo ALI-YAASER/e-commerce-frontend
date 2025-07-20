@@ -6,14 +6,11 @@ import { assets } from "../assets/frontend_assets/assets"; // تأكد من وج
 
 const ProductItem = ({ id, image, name, price }) => {
   const { currency, backendUrl } = useContext(ShopContext);
+  const imageUrl = Array.isArray(image) ? image[0] : image;
 
-  // تأمين عرض الصورة الأولى
-  const displayImage =
-    Array.isArray(image) && image[0]
-      ? backendUrl + image[0]
-      : assets.placeholder_image;
-
-
+  const displayImage = imageUrl?.startsWith('http')
+      ? imageUrl
+      : backendUrl + imageUrl;
 
   return (
     <Link

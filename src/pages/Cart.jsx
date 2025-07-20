@@ -52,6 +52,14 @@ const Cart = () => {
       <div className="">
         {cartData.map((item, index) => {
           const productData = products.find((product) => product._id === item._id);
+
+          const imageUrl = Array.isArray(productData?.images)
+              ? productData.images[0]
+              : productData?.images;
+
+          const displayImage = imageUrl?.startsWith("http")
+              ? imageUrl
+              : backendUrl + imageUrl;
           return (
             <div
               key={index}
@@ -59,15 +67,21 @@ const Cart = () => {
             >
               <div className="flex items-start gap-6">
                 {/* ✅ صورة المنتج */}
+                {/*<img*/}
+                {/*  src={*/}
+                {/*    Array.isArray(productData.images) && productData.images[0]*/}
+                {/*      ? backendUrl + productData.images[0]*/}
+                {/*      : assets.placeholder_image*/}
+                {/*  }*/}
+                {/*  alt={productData.name}*/}
+                {/*  className='w-16 sm:w-20 object-cover'*/}
+                {/*  onError={(e) => (e.target.src = assets.placeholder_image)}*/}
+                {/*/>*/}
                 <img
-                  src={
-                    Array.isArray(productData.images) && productData.images[0]
-                      ? backendUrl + productData.images[0]
-                      : assets.placeholder_image
-                  }
-                  alt={productData.name}
-                  className='w-16 sm:w-20 object-cover'
-                  onError={(e) => (e.target.src = assets.placeholder_image)}
+                    src={displayImage}
+                    alt={productData.name}
+                    className='w-16 sm:w-20 object-cover'
+                    onError={(e) => (e.target.src = assets.placeholder_image)}
                 />
                 {/* تفاصيل المنتج */}
                 <div>
