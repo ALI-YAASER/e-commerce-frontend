@@ -64,13 +64,13 @@ const Add = ({ token }) => {
       productData.append('bestseller', formData.bestseller);
       productData.append('sizes', JSON.stringify(formData.sizes)); // كـ JSON string
       productData.append('date', new Date().toISOString());
-  
-      productData.append('images', image1);
-      productData.append('images', image2);
-      productData.append('images', image3);
-      productData.append('images', image4);
 
-  
+      if (image1) productData.append('images', image1);
+      if (image2) productData.append('images', image2);
+      if (image3) productData.append('images', image3);
+      if (image4) productData.append('images', image4);
+
+
       const response = await axios.post(`${backendUrl}/api/products`, productData, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -98,8 +98,9 @@ const Add = ({ token }) => {
         setImage4(false);
       }
     } catch (error) {
-      console.error("❌ Error uploading product:", error.message);
-      setError(error.response?.data?.msg || "An internal error occurred");
+      console.error("❌ Full error object:", error);
+      console.error("❌ Error uploading product:", error.response?.data || error.message);
+      setError(error.response?.data?.message || "An internal error occurred");
     } finally {
       setIsSubmitting(false);
     }

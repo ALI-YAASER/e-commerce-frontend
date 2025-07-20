@@ -77,10 +77,14 @@ const Edit = ({ token }) => {
       formData.append("subCategory", productData.subCategory);
       formData.append("bestseller", productData.bestseller);
       formData.append("date", productData.date);
+      formData.append("date", new Date(productData.date).getTime());
       formData.append("sizes", JSON.stringify(productData.sizes));
       formData.append("images", JSON.stringify(productData.images));
 
-      newImages.forEach((img) => formData.append("images", img));
+      newImages.forEach((img) => {
+        formData.append("images", img);
+      });
+
 
       const res = await axios.put(
         `${backendUrl}/api/products/${productId}`,
@@ -243,7 +247,8 @@ const Edit = ({ token }) => {
               {productData.images.map((img, index) => (
                 <div key={index} className="relative w-20 h-20">
                   <img
-                    src={`${backendUrl}${img}`}
+                    src={img}
+
                     alt={`img-${index}`}
                     className="w-full h-full object-cover rounded border"
                   />

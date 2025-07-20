@@ -14,7 +14,7 @@ import orderRouter from "./routes/orderRouter.js";
 const app = express()
 const port = process.env.PORT || 4000
 connectDB()
-connectCloudinary()
+await  connectCloudinary()
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url)

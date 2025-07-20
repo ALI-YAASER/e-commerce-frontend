@@ -1,13 +1,16 @@
+// upload.js
+import { cloudinary } from '../config/cloudinary.js'; // اتصال Cloudinary اللي كتبته
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, path.join(__dirname, '../temp')),
-    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'ecommerce-products', // يمكنك تغيير اسم المجلد
+        allowed_formats: ['jpg', 'png', 'jpeg'],
+        public_id: (req, file) => `${Date.now()}-${file.originalname}`, // اسم مخصص للصورة
+    },
 });
 
 const upload = multer({ storage });
