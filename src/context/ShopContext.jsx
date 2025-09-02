@@ -456,6 +456,14 @@ function ShopContextProvider({ children }) {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
 
+  // ✅ Error handler (skip toast if 401)
+  const handleError = (error, fallbackMsg) => {
+    console.error("🔥 Error:", error?.response?.data || error.message);
+    if (error.response?.status !== 401) {
+      toast.error(error.message || fallbackMsg);
+    }
+  };
+
   // 🔹 Add To Cart
   const addToCart = async (itemId, size) => {
     if (!size) {
@@ -483,8 +491,7 @@ function ShopContextProvider({ children }) {
           { headers: { token } }
         );
       } catch (error) {
-        console.log(error);
-        toast.error(error.message);
+        handleError(error, "Error adding to cart");
       }
     }
   };
@@ -503,11 +510,7 @@ function ShopContextProvider({ children }) {
         toast.error("❌ Failed to fetch user");
       }
     } catch (err) {
-      console.error(
-        "🔥 Error fetching user profile:",
-        err?.response?.data || err.message
-      );
-      toast.error("Error fetching user profile");
+      handleError(err, "Error fetching user profile");
     }
   };
 
@@ -539,8 +542,7 @@ function ShopContextProvider({ children }) {
           { headers: { token } }
         );
       } catch (error) {
-        console.log(error);
-        toast.error(error.message || "Error updating cart");
+        handleError(error, "Error updating cart");
       }
     }
   };
@@ -555,7 +557,6 @@ function ShopContextProvider({ children }) {
       );
 
       if (response.data.success) {
-        // ✅ Ensure cartItems has the expected shape
         const formattedCart = response.data.message.reduce((acc, item) => {
           if (!acc[item.itemId]) acc[item.itemId] = {};
           acc[item.itemId][item.size] = item.quantity;
@@ -566,8 +567,7 @@ function ShopContextProvider({ children }) {
         toast.error(response.data.message || "Failed to fetch cart");
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.message || "Something went wrong fetching cart");
+      handleError(error, "Error fetching cart");
     }
   };
 
@@ -597,8 +597,7 @@ function ShopContextProvider({ children }) {
         toast.error(response.data.message || "Failed to fetch products");
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.message || "Something went wrong while fetching products");
+      handleError(error, "Error fetching products");
     }
   };
 
@@ -638,9 +637,7 @@ function ShopContextProvider({ children }) {
   };
 
   return (
-    <ShopContext.Provider value={value}>
-      {children}
-    </ShopContext.Provider>
+    <ShopContext.Provider value={value}>{children}</ShopContext.Provider>
   );
 }
 
