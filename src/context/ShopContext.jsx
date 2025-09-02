@@ -203,6 +203,10 @@
 /* eslint-disable no-empty */
 /* eslint-disable react/prop-types */
 
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-empty */
+/* eslint-disable react/prop-types */
+
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -210,7 +214,7 @@ import axios from "axios";
 
 export const ShopContext = createContext();
 
-const ShopContextProvider = ({ children }) => {
+function ShopContextProvider({ children }) {
   const currency = "$";
   const delivery_fee = 10;
 
@@ -319,7 +323,7 @@ const ShopContextProvider = ({ children }) => {
       );
 
       if (response.data.success) {
-        // ✅ تأكد إن الـ cartItems ليه نفس الشكل اللي الكومبوننت بتاعك متوقعه
+        // ✅ Ensure cartItems has the expected shape
         const formattedCart = response.data.message.reduce((acc, item) => {
           if (!acc[item.itemId]) acc[item.itemId] = {};
           acc[item.itemId][item.size] = item.quantity;
@@ -401,13 +405,11 @@ const ShopContextProvider = ({ children }) => {
     fetchUserData,
   };
 
-  return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
-};
-
-export default ShopContextProvider;
-
-
-  return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
-};
+  return (
+    <ShopContext.Provider value={value}>
+      {children}
+    </ShopContext.Provider>
+  );
+}
 
 export default ShopContextProvider;
