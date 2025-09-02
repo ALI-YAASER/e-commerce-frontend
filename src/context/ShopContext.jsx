@@ -262,22 +262,39 @@ function ShopContextProvider({ children }) {
   };
 
   // 🔹 Get User Profile
-  const fetchUserData = async () => {
-    try {
-      const res = await axios.get(`${backendUrl}/api/user/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  // const fetchUserData = async () => {
+  //   try {
+  //     const res = await axios.get(`${backendUrl}/api/user/profile`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
 
-      if (res.data.success) {
-        setUserData(res.data.user);
-      } else {
-        toast.error("❌ Failed to fetch user");
-      }
-    } catch (err) {
-      console.error("🔥 Error fetching user profile:", err?.response?.data || err.message);
-      toast.error("Error fetching user profile");
+  //     if (res.data.success) {
+  //       setUserData(res.data.user);
+  //     } else {
+  //       toast.error("❌ Failed to fetch user");
+  //     }
+  //   } catch (err) {
+  //     console.error("🔥 Error fetching user profile:", err?.response?.data || err.message);
+  //     toast.error("Error fetching user profile");
+  //   }
+  // };
+  const fetchUserData = async () => {
+  try {
+    const res = await axios.get(`${backendUrl}/api/user/profile`, {
+      headers: { token },
+    });
+
+    if (res.data.success) {
+      setUserData(res.data.user);
+    } else {
+      toast.error("❌ Failed to fetch user");
     }
-  };
+  } catch (err) {
+    console.error("🔥 Error fetching user profile:", err?.response?.data || err.message);
+    toast.error("Error fetching user profile");
+  }
+};
+
 
   // 🔹 Get Cart Count
   const getCartCount = () => {
